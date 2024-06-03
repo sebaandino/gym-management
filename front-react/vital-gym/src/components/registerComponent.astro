@@ -1,0 +1,67 @@
+---
+addEventListener("DOMContentLoaded", () => {
+    document.getElementById("registerForm").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const username = document.getElementById("username");
+        const password = document.getElementById("password");
+        const dni = document.getElementById("dni");
+        const email = document.getElementById("email");
+        const phone = document.getElementById("phone");
+        const role = document.getElementById("role");
+        const messageElement = document.getElementById("message");
+        try {
+            const response = await fetch("http://localhost:8080/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username, password }),
+            });
+            if (response.ok) {
+                const responseBody = await response.json();
+                messageElement.textContent = "Registration successful";
+                messageElement.style.color = "green";
+            } else {
+                const errorText = await response.text();
+                console.error(
+                    "La solicitud de registro falló:",
+                    response.status,
+                    errorText,
+                );
+                messageElement.textContent =
+                    "Registration failed: " + errorText;
+                messageElement.style.color = "red";
+            }
+        } catch (error) {
+            console.error("Error durante la solicitud:", error);
+            messageElement.textContent = "An error occurred";
+            messageElement.style.color = "red";
+        }
+    });
+});
+
+---
+
+
+<div>
+    <form id="registerForm">
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" />
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" />
+        <label for="dni">DNI</label>
+        <input type="text" name="dni" id="dni" />
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" />
+        <label for="phone">Phone</label>
+        <input type="text" name="phone" id="phone" />
+        <label for="role">Role</label>
+        <select name="role" id="role">
+            <option value="ROLE_ADMIN">Admin</option>
+            <option value="ROle_TRAINER">User</option>
+            <option value="ROLE_USER">User</option>
+        </select>
+        <button type="submit">Register</button>
+        <p id="message"></p>
+    </form>
+</div>

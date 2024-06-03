@@ -1,0 +1,87 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Login">
+    <div class="max-w-md mx-auto mt-10">
+        <h1 class="text-2xl font-bold mb-5">Login</h1>
+        <form id="loginForm">
+            <div>
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    name="username"
+                    id="username"
+                    class="border p-2"
+                    required
+                />
+            </div>
+            <div>
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    class="border p-2"
+                    required
+                />
+            </div>
+            <button type="submit" class="bg-blue-500 text-white p-2 mt-2">
+                Login
+            </button>
+            <p id="message"></p>
+        </form>
+    </div>
+    <script>
+        document
+            .getElementById("loginForm")
+            .addEventListener("submit", async (event) => {
+                event.preventDefault(); // Prevenir la recarga de la página
+                const username = document.getElementById("username");
+                const password = document.getElementById("password");
+                const messageElement = document.getElementById("message");
+
+                try {
+                    const response = await fetch(
+                        "http://localhost:8080/auth/login",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ username, password }),
+                            credentials: "include", // Incluir cookies en la solicitud
+                        },
+                    );
+
+                    // Verificar si la respuesta es exitosa
+                    if (response.ok) {
+                        const responseBody = await response.json();
+                        const userRole = responseBody.role;
+                        console.log("User Role:", userRole);
+
+                        // Redirigir según el rol del usuario
+                        if (userRole === "ROLE_ADMIN") {
+                            window.location.href = "/admin"; // Página de administrador
+                        } else {
+                            window.location.href = "/user"; // Página de usuario estándar
+                        }
+                    } else {
+                        const errorText = await response.text();
+                        console.error(
+                            "La solicitud de inicio de sesión falló:",
+                            response.status,
+                            errorText,
+                        );
+                        messageElement.textContent =
+                            "Login failed: " + errorText;
+                        messageElement.style.color = "red";
+                    }
+                } catch (error) {
+                    console.error("Error durante la solicitud:", error);
+                    messageElement.textContent = "An error occurred";
+                    messageElement.style.color = "red";
+                }
+            });
+    </script>
+</Layout>
