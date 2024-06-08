@@ -1,13 +1,9 @@
-package com.gym.demo.models;
+package com.gym.demo.dtos;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.gym.demo.dtos.RutinaDiaDto;
+import com.gym.demo.models.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,23 +11,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@Document(collection = "users")
-public class UserEntity {
+public class UserEntityDto {
 
-    @Id
     private String id;
-
-    private String name;
+    private String nombre;
+    private String apellido;
     private String dni;
     private String email;
-    private String phone;
     private String password;
     private LocalDateTime createdAt;
     private List<RutinaDiaDto> rutina;
-    @DBRef
     private Role role;
 
     private boolean isEnabled;
@@ -41,6 +33,7 @@ public class UserEntity {
     private boolean accountNoExpired;
 
     private boolean credentialNoExpired;
+
 
 
 }

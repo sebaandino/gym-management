@@ -1,14 +1,19 @@
 package com.gym.demo.service.admin;
 
 import java.util.List;
-import java.util.Optional;
 
-import com.gym.demo.models.UserEntity;
+import com.gym.demo.dtos.UserEntityDto;
 
 public interface AdminService {
 
-    public Optional<UserEntity> findUserByDni(String dni);
+    void save(UserEntityDto userEntityDto);
 
-    public List<UserEntity> findAllUsers();
+    UserEntityDto findByDni(String dni);
+
+    List<UserEntityDto> findAll();
+
+    String findRutinaByDni(String dni);
+
+    void delete(String id);
 
 }

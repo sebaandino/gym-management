@@ -3,7 +3,7 @@ package com.gym.demo.controllers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gym.demo.models.UserEntity;
+import com.gym.demo.dtos.UserEntityDto;
 import com.gym.demo.service.admin.AdminServiceImp;
 
 import jakarta.websocket.server.PathParam;
@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/admin")
@@ -23,7 +25,7 @@ public class AdminController {
     @GetMapping("/find/{dni}")
     public ResponseEntity<?> findUserbyDni(@PathParam("dni") String dni) {
         try {
-            UserEntity userEntity = adminService.findUserByDni(dni).get();
+            UserEntityDto userEntity = adminService.findByDni(dni);
             return new ResponseEntity<>(userEntity, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -33,10 +35,16 @@ public class AdminController {
     @GetMapping("/find")
     public ResponseEntity<?> findAllUsers() {
         try {
-            return new ResponseEntity<>(adminService.findAllUsers(), HttpStatus.OK);
+            return new ResponseEntity<>(adminService.findAll(), HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<?> CreateUser(@RequestBody UserEntityDto usuarioDto) {
+        adminService.save(usuarioDto);
+        return new ResponseEntity<>("usuario creado", HttpStatus.OK);
     }
     
 

@@ -3,6 +3,7 @@ package com.gym.demo.security.config;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.gym.demo.dtos.RutinaDiaDto;
 import com.gym.demo.models.Role;
 import com.gym.demo.models.UserEntity;
 import com.gym.demo.repository.RoleRepository;
@@ -47,8 +49,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         @Override
         public UserDetails loadUserByUsername(String dni) throws UsernameNotFoundException {
 
-                UserEntity user = userRepository.findUserEntityByDni(dni)
-                                .orElseThrow(() -> new UsernameNotFoundException("No se encontró el usuario"));
+                UserEntity user = userRepository.findUserEntityByDni(dni);
 
                 List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
                 authorityList.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleEnum().name()));
@@ -102,13 +103,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         public AuthResponse registerUser(AuthRegisterRequest authRegisterRequest) {
 
-                String username = authRegisterRequest.username();
+                String username = authRegisterRequest.name();
                 String password = authRegisterRequest.password();
                 String encodedPassword = passwordEncoder.encode(password);
                 String dni = authRegisterRequest.dni();
                 String email = authRegisterRequest.email();
                 String phone = authRegisterRequest.phone();
-                String roleRequest = authRegisterRequest.roleRequest().roleName();
+                String roleRequest = authRegisterRequest.roleRequest().roleName().stream()
+                .collect(Collectors.joining(","));
+                List<RutinaDiaDto> rutina = authRegisterRequest.rutinas();
 
                 Role role = roleRepository.findByRoleEnum(roleRequest);
 
@@ -128,6 +131,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                 .accountNoExpired(true)
                                 .credentialNoExpired(true)
                                 .role(role)
+                                .rutina(rutina)
                                 .build();
 
                 UserEntity userCreated = userRepository.save(userEntity);
