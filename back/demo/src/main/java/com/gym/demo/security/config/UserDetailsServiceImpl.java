@@ -51,7 +51,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                 .orElseThrow(() -> new UsernameNotFoundException("No se encontró el usuario"));
 
                 List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
-                user.getRole().getPermissionsList().forEach(permission -> authorityList.add(new SimpleGrantedAuthority("ROLE_" + permission.getName())));
+                authorityList.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleEnum().name()));
 
                 return new User(user.getDni(),
                                 user.getPassword(),
@@ -134,7 +134,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
                 ArrayList<SimpleGrantedAuthority> authorityList = new ArrayList<>();
 
-                userCreated.getRole().getPermissionsList().forEach(permission -> authorityList.add(new SimpleGrantedAuthority("ROLE_" + permission.getName())));
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(userCreated.getDni(),
                                 userCreated.getPassword(), authorityList);

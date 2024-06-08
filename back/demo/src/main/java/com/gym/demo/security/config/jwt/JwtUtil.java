@@ -39,7 +39,7 @@ public class JwtUtil {
                 .withIssuer(this.userGenerator)
                 .withClaim("authorities", authorities)
                 .withIssuedAt(new Date())
-                .withExpiresAt(new Date(System.currentTimeMillis() + 1800000 * 4))
+                .withExpiresAt(new Date(System.currentTimeMillis() + 1800000 * 4)) // 2 horas
                 .withJWTId(UUID.randomUUID().toString())
                 .withNotBefore(new Date(System.currentTimeMillis()))
                 .sign(algorithm);

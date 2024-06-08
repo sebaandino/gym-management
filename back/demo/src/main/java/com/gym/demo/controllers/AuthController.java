@@ -1,4 +1,4 @@
-package com.gym.demo.security.config.Auth;
+package com.gym.demo.controllers;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gym.demo.security.config.UserDetailsServiceImpl;
+import com.gym.demo.security.config.Auth.AuthLoginRequest;
+import com.gym.demo.security.config.Auth.AuthRegisterRequest;
+import com.gym.demo.security.config.Auth.AuthResponse;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,12 +40,11 @@ public class AuthController {
 
             Cookie jwtCookie = new Cookie("jwt", authResponse.jwt());
             jwtCookie.setHttpOnly(true);
-            jwtCookie.setSecure(true); // Asegúrate de que tu aplicación esté en HTTPS en producción
+            jwtCookie.setSecure(true); //
             jwtCookie.setPath("/");
-            jwtCookie.setMaxAge(60 * 60); // La cookie expirará en 1 hora
+            jwtCookie.setMaxAge(60 * 60); // 1 hora
             response.addCookie(jwtCookie);
 
-            // Devolver un JSON con la estructura { "role": "ROLE_ADMIN" }
             Map<String, String> responseBody = new HashMap<>();
             responseBody.put("role", authResponse.role());
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
@@ -63,12 +65,19 @@ public class AuthController {
 
     @PostMapping("/log-out")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        
+        Cookie[] cookies = request.getCookies();
 
-        Cookie cookie = new Cookie("jwt", "");
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        response.addCookie(cookie);
-
+        if (cookies != null) {
+            Arrays.stream(cookies).forEach(cookie -> {
+                if (cookie.getName().equals("jwt")) {
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                }
+            });
+        }
+    
         return new ResponseEntity<>("Logout", HttpStatus.OK);
     }
 
