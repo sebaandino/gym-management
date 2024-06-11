@@ -33,6 +33,7 @@ public class UserEntity {
     private List<RutinaDiaDto> rutina;
     @DBRef
     private Role role;
+    private List<Payment> payments;
 
     private boolean isEnabled;
 

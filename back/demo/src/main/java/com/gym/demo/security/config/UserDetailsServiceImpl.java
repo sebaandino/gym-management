@@ -18,9 +18,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.gym.demo.dtos.RutinaDiaDto;
+import com.gym.demo.models.Payment;
 import com.gym.demo.models.Role;
 import com.gym.demo.models.UserEntity;
+import com.gym.demo.repository.PaymentRepository;
 import com.gym.demo.repository.RoleRepository;
 import com.gym.demo.repository.UserRepository;
 import com.gym.demo.security.config.Auth.AuthLoginRequest;
@@ -46,10 +47,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         @Autowired
         private PasswordEncoder passwordEncoder;
 
+        @Autowired
+        private PaymentRepository paymentRepository;
+
         @Override
         public UserDetails loadUserByUsername(String dni) throws UsernameNotFoundException {
 
-                UserEntity user = userRepository.findUserEntityByDni(dni);
+                UserEntity user = userRepository.findByDni(dni);
 
                 List<SimpleGrantedAuthority> authorityList = new ArrayList<>();
                 authorityList.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().getRoleEnum().name()));
@@ -111,9 +115,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 String phone = authRegisterRequest.phone();
                 String roleRequest = authRegisterRequest.roleRequest().roleName().stream()
                 .collect(Collectors.joining(","));
-                List<RutinaDiaDto> rutina = authRegisterRequest.rutinas();
 
                 Role role = roleRepository.findByRoleEnum(roleRequest);
+
+                List<Payment> payments = new ArrayList<>();
+
+                payments.add(paymentRepository.save(Payment.builder()
+                                .userDni(dni)
+                                .paymentDate(LocalDateTime.now())
+                                .nextPaymentDate(LocalDateTime.now().plusMonths(1))
+                                .build()));
 
                 if (role == null) {
                         throw new BadCredentialsException("No se encontraron los roles");
@@ -131,7 +142,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                 .accountNoExpired(true)
                                 .credentialNoExpired(true)
                                 .role(role)
-                                .rutina(rutina)
+                                .rutina(null)
+                                .payments(payments)
                                 .build();
 
                 UserEntity userCreated = userRepository.save(userEntity);

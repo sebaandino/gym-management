@@ -7,8 +7,7 @@ import com.gym.demo.models.UserEntity;
 @Repository
 public interface UserRepository extends MongoRepository<UserEntity, String> {
 
-    UserEntity findUserEntityByDni(String dni);
+    UserEntity findByDni(String dni);
     boolean existsByDni(String dni);
-    void deleteById(String id);
 
 }

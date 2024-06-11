@@ -1,20 +1,8 @@
 package com.gym.demo;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.gym.demo.models.Role;
-import com.gym.demo.models.RoleEnum;
-import com.gym.demo.models.UserEntity;
-import com.gym.demo.repository.RoleRepository;
-import com.gym.demo.repository.UserRepository;
 
 @SpringBootApplication
 public class DemoApplication {

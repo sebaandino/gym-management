@@ -1,11 +1,15 @@
 package com.gym.demo.service.admin;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.gym.demo.dtos.RutinaDiaDto;
 import com.gym.demo.dtos.UserEntityDto;
+import com.gym.demo.models.Payment;
 import com.gym.demo.models.UserEntity;
+import com.gym.demo.repository.PaymentRepository;
 import com.gym.demo.repository.UserRepository;
 import com.gym.demo.utils.UsuarioMapper;
 
@@ -14,9 +18,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 
-public class AdminServiceImp implements AdminService{
+public class AdminServiceImp implements AdminService {
 
     private final UserRepository usuarioRepository;
+
+    private final PaymentRepository paymentRepository;
 
     @Override
     public void save(UserEntityDto usuarioDto) {
@@ -31,12 +37,12 @@ public class AdminServiceImp implements AdminService{
 
     @Override
     public UserEntityDto findByDni(String dni) {
-        return UsuarioMapper.INSTANCE.usuarioToUsuarioDto(usuarioRepository.findUserEntityByDni(dni));
+        return UsuarioMapper.INSTANCE.usuarioToUsuarioDto(usuarioRepository.findByDni(dni));
     }
 
     @Override
     public String findRutinaByDni(String dni) {
-        return usuarioRepository.findUserEntityByDni(dni).getRutina().toString();
+        return usuarioRepository.findByDni(dni).getRutina().toString();
     }
 
     @Override
@@ -47,6 +53,47 @@ public class AdminServiceImp implements AdminService{
     @Override
     public List<UserEntityDto> findAll() {
         return usuarioRepository.findAll().stream().map(UsuarioMapper.INSTANCE::usuarioToUsuarioDto).toList();
+    }
+
+    @Override
+    public List<Payment> findPaymentsByDni(String dni) {
+
+        return usuarioRepository.findByDni(dni).getPayments();
+    }
+
+    @Override
+    public Payment addPayment(String dni) {
+
+        UserEntity userEntity = usuarioRepository.findByDni(dni);
+        if (userEntity == null) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+
+        LocalDateTime datePayment = LocalDateTime.now();
+        Payment payment = Payment.builder()
+                .userDni(dni)
+                .paymentDate(datePayment)
+                .nextPaymentDate(datePayment.plusMonths(1))
+                .build();
+
+        paymentRepository.save(payment);
+
+        userEntity.getPayments().add(payment);
+
+        usuarioRepository.save(userEntity);
+
+        return payment;
+    }
+
+    @Override
+    public void setRutine(String dni, List<RutinaDiaDto> rutinaDiaDto) {
+        UserEntity userEntity = usuarioRepository.findByDni(dni);
+        if (userEntity == null) {
+            throw new RuntimeException("Usuario no encontrado");
+        }
+        
+        userEntity.setRutina(rutinaDiaDto);
+        usuarioRepository.save(userEntity);
     }
 
 
