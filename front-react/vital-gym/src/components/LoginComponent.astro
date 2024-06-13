@@ -1,8 +1,6 @@
 ---
-import Layout from "../layouts/Layout.astro";
 ---
 
-<Layout title="Login">
     <div class="max-w-md mx-auto mt-10">
         <h1 class="text-2xl font-bold mb-5">Login</h1>
         <form id="loginForm">
@@ -37,20 +35,37 @@ import Layout from "../layouts/Layout.astro";
             .getElementById("loginForm")
             .addEventListener("submit", async (event) => {
                 event.preventDefault(); // Prevenir la recarga de la página
-                const username = document.getElementById("username");
-                const password = document.getElementById("password");
+
+                const usernameInput = document.getElementById(
+                    "username",
+                ) as HTMLInputElement;
+                const passwordInput = document.getElementById(
+                    "password",
+                ) as HTMLInputElement;
                 const messageElement = document.getElementById("message");
+
+                // Obtener los valores de los campos de entrada
+                const username = usernameInput.value;
+                const password = passwordInput.value;
+
+                let headersList = {
+                    Accept: "*/*",
+                    "Content-Type": "application/json",
+                };
+
+                let bodyContent = JSON.stringify({
+                    username: username,
+                    password: password,
+                });
 
                 try {
                     const response = await fetch(
                         "http://localhost:8080/auth/login",
                         {
                             method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({ username, password }),
-                            credentials: "include", // Incluir cookies en la solicitud
+                            headers: headersList,
+                            body: bodyContent,
+                            credentials: "include",
                         },
                     );
 
@@ -84,4 +99,3 @@ import Layout from "../layouts/Layout.astro";
                 }
             });
     </script>
-</Layout>

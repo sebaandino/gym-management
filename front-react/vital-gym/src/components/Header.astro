@@ -1,12 +1,75 @@
-
 <header class="w-full h-14 flex justify-center items-center">
     <nav class="gap-10 text-white flex justify-center items-center">
         <a href="/">Inicio</a>
         <a href="/">Actividades</a>
         <a href="/about">Ubicacion</a>
         <a href="/contact">Contacto</a>
-        <a href="/login" class="bg-green-500 text-white p-2 rounded-lg px-6"
-            >Login</a
+        <a
+            href="/login"
+            class="bg-green-500 text-white p-2 rounded-lg px-6"
+            id="login">Login</a
+        >
+        <a
+            href="#"
+            class="bg-green-500 text-white p-2 rounded-lg px-6"
+            id="logout">logout</a
         >
     </nav>
 </header>
+
+<script>
+    async function checkAuthentication() {
+        try {
+            const response = await fetch("http://localhost:8080/auth/check-authentication", {
+                method: "GET",
+                credentials: "include",
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                return data.authenticated;
+            } else {
+                console.error(
+                    "Error checking authentication:",
+                    response.status,
+                );
+                return false;
+            }
+        } catch (error) {
+            console.error("Error checking authentication:", error);
+            return false;
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        const isLoggedIn = await checkAuthentication();
+        const loginButton = document.getElementById("login");
+        const logoutButton = document.getElementById("logout");
+
+        if (isLoggedIn) {
+            loginButton.style.display = "none";
+            logoutButton.style.display = "block";
+        } else {
+            loginButton.style.display = "block";
+            logoutButton.style.display = "none";
+        }
+    });
+
+    document.getElementById("logout").addEventListener("click", async () => {
+        try {
+            const response = await fetch("http://localhost:8080/auth/log-out", {
+                method: "POST",
+                credentials: "include",
+            });
+
+            if (response.status === 200) {
+                console.log("Logout successful");
+                window.location.href = "/login";
+            } else {
+                console.error("Logout failed", response.status);
+            }
+        } catch (error: any) {
+            console.error("Error during logout request:", error);
+        }
+    });
+</script>

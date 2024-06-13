@@ -29,8 +29,6 @@ import com.gym.demo.security.config.Auth.AuthRegisterRequest;
 import com.gym.demo.security.config.Auth.AuthResponse;
 import com.gym.demo.security.config.jwt.JwtUtil;
 
-import jakarta.servlet.http.Cookie;
-
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -78,14 +76,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
                 String token = jwtUtil.generarToken(authentication);
 
-                Cookie jwtCookie = new Cookie("jwt", token);
-
                 String role = authentication.getAuthorities().stream()
-                .map(grantedAuthority -> grantedAuthority.getAuthority())
-                .filter(authority -> authority.startsWith("ROLE_"))
-                .findFirst()
-                .orElse("ROLE_USER"); // O cualquier rol por defecto
-                AuthResponse authResponse = new AuthResponse(username, "login correcto", token, true , jwtCookie , role);
+                                .map(grantedAuthority -> grantedAuthority.getAuthority())
+                                .filter(authority -> authority.startsWith("ROLE_"))
+                                .findFirst()
+                                .orElse("ROLE_USER"); // O cualquier rol por defecto
+                AuthResponse authResponse = new AuthResponse(username, "login correcto", token, true, role);
 
                 return authResponse;
         }
@@ -114,7 +110,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 String email = authRegisterRequest.email();
                 String phone = authRegisterRequest.phone();
                 String roleRequest = authRegisterRequest.roleRequest().roleName().stream()
-                .collect(Collectors.joining(","));
+                                .collect(Collectors.joining(","));
 
                 Role role = roleRepository.findByRoleEnum(roleRequest);
 
@@ -150,16 +146,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
                 ArrayList<SimpleGrantedAuthority> authorityList = new ArrayList<>();
 
-
                 Authentication authentication = new UsernamePasswordAuthenticationToken(userCreated.getDni(),
                                 userCreated.getPassword(), authorityList);
 
                 String token = jwtUtil.generarToken(authentication);
 
                 AuthResponse authResponse = new AuthResponse(userCreated.getDni(), "registrado correctamente", token,
-                                true , null, null);
+                                true, null);
 
                 return authResponse;
 
         }
+
 }

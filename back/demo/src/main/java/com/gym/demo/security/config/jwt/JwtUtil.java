@@ -72,4 +72,17 @@ public class JwtUtil {
         return decodedJWT.getClaims();
     }
 
+    public boolean validate(String token) {
+
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        JWTVerifier verifier = JWT.require(algorithm).build();
+
+
+        try {
+            DecodedJWT jwt = verifier.verify(token);
+            return true;
+        } catch (JWTVerificationException e) {
+            return false;
+        }
+    }
 }
