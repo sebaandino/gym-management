@@ -1,101 +1,102 @@
 ---
+
 ---
 
-    <div class="max-w-md mx-auto mt-10">
-        <h1 class="text-2xl font-bold mb-5">Login</h1>
-        <form id="loginForm">
-            <div>
-                <label for="username">Username</label>
-                <input
-                    type="text"
-                    name="username"
-                    id="username"
-                    class="border p-2"
-                    required
-                />
-            </div>
-            <div>
-                <label for="password">Password</label>
-                <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    class="border p-2"
-                    required
-                />
-            </div>
-            <button type="submit" class="bg-blue-500 text-white p-2 mt-2">
-                Login
-            </button>
-            <p id="message"></p>
-        </form>
-    </div>
-    <script>
-        document
-            .getElementById("loginForm")
-            .addEventListener("submit", async (event) => {
-                event.preventDefault(); // Prevenir la recarga de la página
+<div class="h-screen flex flex-col justify-center items-center">
+    <form id="loginForm" class="flex flex-col justify-center items-center gap-6 text-xl">
+        <div class="flex flex-col justify-center items-center gap-2">
+            <label for="username">DNI</label>
+            <input
+                type="text"
+                name="username"
+                id="username"
+                class="p-2 rounded-xl border-b-2 border-x-4 border-yellow-300 "
+                required
+            />
+        </div>
+        <div class="flex flex-col justify-center items-center gap-2">
+            <label for="password">Password</label>
+            <input
+                type="password"
+                name="password"
+                id="password"
+                class="p-2 rounded-xl border-b-2 border-x-4 border-yellow-300 "
+                required
+            />
+        </div>
+        <button type="submit" class="bg-green-500 text-white p-4 w-full rounded-xl">
+            Login
+        </button>
+        <p id="message"></p>
+    </form>
+    <h3 class="w-2/3 text-center">Si olvidaste tu contraseña, puedes hacercarte a recepcion </h3>
+</div>
 
-                const usernameInput = document.getElementById(
-                    "username",
-                ) as HTMLInputElement;
-                const passwordInput = document.getElementById(
-                    "password",
-                ) as HTMLInputElement;
-                const messageElement = document.getElementById("message");
+<script>
+    document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (event) => {
+            event.preventDefault(); // Prevenir la recarga de la página
 
-                // Obtener los valores de los campos de entrada
-                const username = usernameInput.value;
-                const password = passwordInput.value;
+            const usernameInput = document.getElementById(
+                "username",
+            ) as HTMLInputElement;
+            const passwordInput = document.getElementById(
+                "password",
+            ) as HTMLInputElement;
+            const messageElement = document.getElementById("message");
 
-                let headersList = {
-                    Accept: "*/*",
-                    "Content-Type": "application/json",
-                };
+            // Obtener los valores de los campos de entrada
+            const username = usernameInput.value;
+            const password = passwordInput.value;
 
-                let bodyContent = JSON.stringify({
-                    username: username,
-                    password: password,
-                });
+            let headersList = {
+                Accept: "*/*",
+                "Content-Type": "application/json",
+            };
 
-                try {
-                    const response = await fetch(
-                        "http://localhost:8080/auth/login",
-                        {
-                            method: "POST",
-                            headers: headersList,
-                            body: bodyContent,
-                            credentials: "include",
-                        },
-                    );
+            let bodyContent = JSON.stringify({
+                username: username,
+                password: password,
+            });
 
-                    // Verificar si la respuesta es exitosa
-                    if (response.ok) {
-                        const responseBody = await response.json();
-                        const userRole = responseBody.role;
-                        console.log("User Role:", userRole);
+            try {
+                const response = await fetch(
+                    "http://localhost:8080/auth/login",
+                    {
+                        method: "POST",
+                        headers: headersList,
+                        body: bodyContent,
+                        credentials: "include",
+                    },
+                );
 
-                        // Redirigir según el rol del usuario
-                        if (userRole === "ROLE_ADMIN") {
-                            window.location.href = "/admin"; // Página de administrador
-                        } else {
-                            window.location.href = "/user"; // Página de usuario estándar
-                        }
+                // Verificar si la respuesta es exitosa
+                if (response.ok) {
+                    const responseBody = await response.json();
+                    const userRole = responseBody.role;
+                    console.log("User Role:", userRole);
+
+                    // Redirigir según el rol del usuario
+                    if (userRole === "ROLE_ADMIN") {
+                        window.location.href = "/admin"; // Página de administrador
                     } else {
-                        const errorText = await response.text();
-                        console.error(
-                            "La solicitud de inicio de sesión falló:",
-                            response.status,
-                            errorText,
-                        );
-                        messageElement.textContent =
-                            "Login failed: " + errorText;
-                        messageElement.style.color = "red";
+                        window.location.href = "/user"; // Página de usuario estándar
                     }
-                } catch (error) {
-                    console.error("Error durante la solicitud:", error);
-                    messageElement.textContent = "An error occurred";
+                } else {
+                    const errorText = await response.text();
+                    console.error(
+                        "La solicitud de inicio de sesión falló:",
+                        response.status,
+                        errorText,
+                    );
+                    messageElement.textContent = "Login failed: " + errorText;
                     messageElement.style.color = "red";
                 }
-            });
-    </script>
+            } catch (error) {
+                console.error("Error durante la solicitud:", error);
+                messageElement.textContent = "An error occurred";
+                messageElement.style.color = "red";
+            }
+        });
+</script>

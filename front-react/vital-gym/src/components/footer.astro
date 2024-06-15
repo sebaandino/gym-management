@@ -1,12 +1,24 @@
 ---
-import Linkedin from '../icons/Linkedin.astro';
-import Github from '../icons/Github.astro';
+import Linkedin from "../icons/Linkedin.astro";
+import Github from "../icons/Github.astro";
 ---
 
-<footer class="  flex justify-between bg-neutral-400 absolute bottom-0 w-full h-32 items-center">
+<footer
+    class="flex justify-evenly bg-neutral-400 absolute w-full h-32 items-center"
+>
     <span>Calle Falsa 123 , Merlo, Argentina</span>
     <div class="flex items-center gap-2">
-        <Linkedin />
-        <Github />
+        <a
+            href="https://www.linkedin.com/in/elias-sebastian-agustin-andino-9286a12b2/"
+            target="_blank"
+            rel="noreferrer"
+            ><Linkedin />
+            <a
+                href="https://github.com/sebaandino"
+                target="_blank"
+                rel="noreferrer"
+                ><Github />
+            </a>
+        </a>
     </div>
 </footer>
