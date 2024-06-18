@@ -1,0 +1,138 @@
+
+    <div class=" flex flex-col items-center justify-center  ">
+        <form
+            id="newUserForm"
+            class="flex flex-col justify-center items-center gap-2 text-white p-5 border-4 border-black rounded-xl"
+        >
+            <h2 class="text-3xl font-bold mt-6 mb-4">Crear usuario</h2>
+            <label for="username">Nombre Completo</label>
+            <input
+                type="text"
+                name="username"
+                id="username"
+                class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent"
+                required
+            />
+            <label for="password">Password</label>
+            <input
+                type="password"
+                name="password"
+                id="password"
+                class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent"
+                required
+            />
+            <label for="passwordConfirm">Confirmar password</label>
+            <input
+                type="password"
+                name="passwordConfirm"
+                id="passwordConfirm"
+                class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent"
+                required
+            />
+            <label for="dni">DNI</label>
+            <input
+                type="text"
+                name="dni"
+                id="dni"
+                class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent"
+                required
+            />
+            <label for="email">Email</label>
+            <input
+                type="email"
+                name="email"
+                id="email"
+                class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent"
+                required
+            />
+            <label for="phone">Telefono</label>
+            <input
+                type="text"
+                name="phone"
+                id="phone"
+                class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent"
+                required
+            />
+            <label for="role">ROL</label>
+            <select
+                name="role"
+                id="role"
+                class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent"
+            >
+                <option value="USER" class="bg-transparent text-black"
+                    >Usuario</option
+                >
+                <option value="TRAINER" class="bg-transparent text-black"
+                    >Trainer</option
+                >
+                <option value="ADMIN" class="bg-transparent text-black"
+                    >Admin</option
+                >
+            </select>
+            <button
+                type="submit"
+                class="bg-green-500 text-white rounded-xl p-4"
+            >
+                Crear usuario
+            </button>
+        </form>
+    </div>
+<script>
+    document
+        .getElementById("newUserForm")
+        .addEventListener("submit", async (event) => {
+            event.preventDefault();
+            let username = document.getElementById(
+                "username",
+            ) as HTMLInputElement;
+            let password = document.getElementById(
+                "password",
+            ) as HTMLInputElement;
+            let passwordConfirm = document.getElementById(
+                "passwordConfirm",
+            ) as HTMLInputElement;
+            let dni = document.getElementById("dni") as HTMLInputElement;
+            let email = document.getElementById("email") as HTMLInputElement;
+            let phone = document.getElementById("phone") as HTMLInputElement;
+            let role = document.getElementById("role") as HTMLInputElement;
+            let roleRequest = {
+                roleName: [role.value],
+            };
+
+            if (password.value !== passwordConfirm.value) {
+                alert("Passwords do not match");
+                return;
+            }
+
+            try {
+                let response = await fetch(
+                    "http://localhost:8080/admin/newuser",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            name: username.value,
+                            password: password.value,
+                            dni: dni.value,
+                            email: email.value,
+                            phone: phone.value,
+                            roleRequest: roleRequest,
+                        }),
+                        credentials: "include",
+                    },
+                );
+                if (response.ok) {
+                    let result = await response.json();
+                    alert(result.message);
+                } else {
+                    let errorText = await response.json();
+                    alert(errorText.message);
+                }
+            } catch (error) {
+                console.error("Error during registration:", error);
+                alert("Ocurrió un error durante el registro");
+            }
+        });
+</script>

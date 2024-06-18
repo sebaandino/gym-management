@@ -6,14 +6,20 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gym.demo.dtos.RutinaDiaDto;
 import com.gym.demo.dtos.UserEntityDto;
 import com.gym.demo.models.Payment;
+import com.gym.demo.security.config.UserDetailsServiceImpl;
+import com.gym.demo.security.config.Auth.AuthRegisterRequest;
 import com.gym.demo.service.admin.AdminServiceImp;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class AdminController {
 
     private final AdminServiceImp adminService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @GetMapping("/find")
     public ResponseEntity<?> findAllUsers() {
@@ -85,4 +92,19 @@ public class AdminController {
         }
     }
 
+    @PostMapping("/newuser")
+    public ResponseEntity<Map<String, String>> register(@RequestBody @Valid AuthRegisterRequest authRegisterRequest) {
+        Map<String, String> response = new HashMap<>();
+        try {
+            userDetailsService.registerUser(authRegisterRequest);
+            response.put("message", "Usuario registrado con éxito");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (BadCredentialsException e) {
+            response.put("message", "El usuario ya existe");
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
 }

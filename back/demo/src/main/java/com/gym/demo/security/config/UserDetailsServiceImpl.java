@@ -80,7 +80,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                 .map(grantedAuthority -> grantedAuthority.getAuthority())
                                 .filter(authority -> authority.startsWith("ROLE_"))
                                 .findFirst()
-                                .orElse("ROLE_USER"); // O cualquier rol por defecto
+                                .orElse("ROLE_USER"); // rol por defecto
                 AuthResponse authResponse = new AuthResponse(username, "login correcto", token, true, role);
 
                 return authResponse;
@@ -141,6 +141,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                 .rutina(null)
                                 .payments(payments)
                                 .build();
+
+                                if(userRepository.findByDni(dni) != null) {
+                                        throw new BadCredentialsException("El usuario ya existe");
+                                }
 
                 UserEntity userCreated = userRepository.save(userEntity);
 

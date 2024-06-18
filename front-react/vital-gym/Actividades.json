@@ -1,0 +1,88 @@
+{
+    "actividades": [
+        {
+            "nombre": "Clase de Yoga",
+            "horarios": [
+                {
+                    "dia": "Lunes",
+                    "horaInicio": "08:00",
+                    "horaFin": "09:00"
+                },
+                {
+                    "dia": "Miércoles",
+                    "horaInicio": "08:00",
+                    "horaFin": "09:00"
+                },
+                {
+                    "dia": "Viernes",
+                    "horaInicio": "18:00",
+                    "horaFin": "19:00"
+                }
+            ],
+            "descripcion": "Mejora la flexibilidad, fortalece los músculos y reduce el estrés."
+        },
+        {
+            "nombre": "Entrenamiento Funcional",
+            "horarios": [
+                {
+                    "dia": "Martes",
+                    "horaInicio": "07:00",
+                    "horaFin": "08:00"
+                },
+                {
+                    "dia": "Jueves",
+                    "horaInicio": "07:00",
+                    "horaFin": "08:00"
+                },
+                {
+                    "dia": "Sábado",
+                    "horaInicio": "10:00",
+                    "horaFin": "11:00"
+                }
+            ],
+            "descripcion": "Mejora la fuerza, estabilidad y movilidad con ejercicios dinámicos."
+        },
+        {
+            "nombre": "Zumba",
+            "horarios": [
+                {
+                    "dia": "Lunes",
+                    "horaInicio": "19:00",
+                    "horaFin": "20:00"
+                },
+                {
+                    "dia": "Miércoles",
+                    "horaInicio": "19:00",
+                    "horaFin": "20:00"
+                },
+                {
+                    "dia": "Sábado",
+                    "horaInicio": "11:00",
+                    "horaFin": "12:00"
+                }
+            ],
+            "descripcion": "Rutina de baile con música latina para quemar calorías y tonificar."
+        },
+        {
+            "nombre": "Entrenamiento de Fuerza",
+            "horarios": [
+                {
+                    "dia": "Martes",
+                    "horaInicio": "18:00",
+                    "horaFin": "19:00"
+                },
+                {
+                    "dia": "Jueves",
+                    "horaInicio": "18:00",
+                    "horaFin": "19:00"
+                },
+                {
+                    "dia": "Domingo",
+                    "horaInicio": "09:00",
+                    "horaFin": "10:00"
+                }
+            ],
+            "descripcion": "Desarrolla la musculatura con ejercicios de pesas y resistencia."
+        }
+    ]
+}

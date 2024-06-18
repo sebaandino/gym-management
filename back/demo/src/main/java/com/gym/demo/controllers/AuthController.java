@@ -56,16 +56,6 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid AuthRegisterRequest authRegisterRequest) {
-
-        try {
-            return new ResponseEntity<>(userDetailsService.registerUser(authRegisterRequest), HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e, HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @PostMapping("/log-out")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
 

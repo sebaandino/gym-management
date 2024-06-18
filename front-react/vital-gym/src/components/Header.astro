@@ -1,14 +1,10 @@
-<header class="w-dvw h-32 flex justify-center items-center backdrop-blur-lg border-b-2 border-yellow-300 absolute top-0 left-0 right-0">
-    <nav class="gap-6 text-white flex justify-center items-center flex-wrap flex-grow">
-        <a href="#inicio">Inicio</a>
-        <a href="#actividades">Actividades</a>
-        <a href="#ubicacion">Ubicacion</a>
-        <a href="#contacto">Contacto</a>
-        <a
-            href="/login"
-            class="bg-green-500 text-white p-2 rounded-lg px-6"
-            id="login">Login</a
-        >
+<header
+    class="w-full h-32 flex justify-center items-center backdrop-blur-lg border-b-2 border-yellow-300 top-0 left-0 right-0"
+>
+    <nav
+        class="gap-6 text-white flex justify-around items-center flex-wrap flex-grow"
+    >
+        <a href="/">Inicio</a>
         <a
             href="#"
             class="bg-green-500 text-white p-2 rounded-lg px-6"
@@ -18,43 +14,6 @@
 </header>
 
 <script>
-    async function checkAuthentication() {
-        try {
-            const response = await fetch("http://localhost:8080/auth/check-authentication", {
-                method: "GET",
-                credentials: "include",
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                return data.authenticated;
-            } else {
-                console.error(
-                    "Error checking authentication:",
-                    response.status,
-                );
-                return false;
-            }
-        } catch (error) {
-            console.error("Error checking authentication:", error);
-            return false;
-        }
-    }
-
-    document.addEventListener("DOMContentLoaded", async () => {
-        const isLoggedIn = await checkAuthentication();
-        const loginButton = document.getElementById("login");
-        const logoutButton = document.getElementById("logout");
-
-        if (isLoggedIn) {
-            loginButton.style.display = "none";
-            logoutButton.style.display = "block";
-        } else {
-            loginButton.style.display = "block";
-            logoutButton.style.display = "none";
-        }
-    });
-
     document.getElementById("logout").addEventListener("click", async () => {
         try {
             const response = await fetch("http://localhost:8080/auth/log-out", {
@@ -69,7 +28,7 @@
                 console.error("Logout failed", response.status);
             }
         } catch (error: any) {
-            console.error("Error during logout request:", error);
+            console.error("Error:", error);
         }
     });
 </script>
