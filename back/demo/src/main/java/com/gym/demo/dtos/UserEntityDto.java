@@ -21,6 +21,7 @@ public class UserEntityDto {
     private String name;
     private String dni;
     private String email;
+    private String phone;
     private String password;
     private LocalDateTime createdAt;
     private List<RutinaDiaDto> rutina;

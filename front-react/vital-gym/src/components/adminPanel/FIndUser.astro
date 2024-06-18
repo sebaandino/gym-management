@@ -1,0 +1,187 @@
+<div class="flex flex-col items-center justify-center">
+    <form
+        id="findUserForm"
+        class="flex flex-col justify-center items-center gap-2 text-white p-5 border-4 border-black rounded-xl"
+    >
+        <h2 class="text-3xl font-bold py-2s">Buscar usuario</h2>
+        <div class="flex gap-1">
+            <input
+                type="text"
+                id="dniImput"
+                placeholder="DNI"
+                class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent"
+            />
+            <button type="submit" class="bg-green-500 text-white rounded-xl p-2"
+                >Buscar</button
+            >
+        </div>
+        <input
+            disabled
+            type="text"
+            id="nameFind"
+            placeholder="Nombre"
+            class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent w-full"
+        />
+        <input
+            disabled
+            type="text"
+            id="emailFind"
+            placeholder="Email"
+            class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent w-full"
+        />
+        <input
+            disabled
+            type="text"
+            id="phoneFind"
+            placeholder="Telefono"
+            class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent w-full"
+        />
+        <input
+            disabled
+            type="text"
+            id="roleFind"
+            placeholder="ROL"
+            class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent w-full"
+        />
+        <textarea
+            disabled
+            name="rutina"
+            id="rutinaFind"
+            placeholder="Rutina"
+            class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent w-full h-[420px] max-h-[420px] overflow-y-auto"
+        ></textarea>
+        <label for="pay">Proxima fecha de pago</label>
+        <input
+            disabled
+            type="text"
+            id="payFind"
+            placeholder="Fecha de pago"
+            class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent w-full "
+        />
+        <button type="button" id="addPaymentBtn" class="bg-blue-500 text-white rounded-xl p-2 mt-2">
+            Registrar Pago
+        </button>
+    </form>
+</div>
+<script>
+    document
+        .getElementById("findUserForm")
+        .addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            let dni = document.getElementById("dniImput") as HTMLInputElement;
+
+            let name = document.getElementById("nameFind") as HTMLInputElement;
+            let email = document.getElementById(
+                "emailFind",
+            ) as HTMLInputElement;
+            let phone = document.getElementById(
+                "phoneFind",
+            ) as HTMLInputElement;
+            let role = document.getElementById("roleFind") as HTMLInputElement;
+            let rutina = document.getElementById(
+                "rutinaFind",
+            ) as HTMLInputElement;
+            let pay = document.getElementById("payFind") as HTMLInputElement;
+
+            try {
+                let response = await fetch(
+                    "http://localhost:8080/admin/find/" + dni.value,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        credentials: "include",
+                    },
+                );
+
+                if (response.ok) {
+                    let result = await response.json();
+                    name.value = result.name;
+                    email.value = result.email;
+                    phone.value = result.phone;
+                    role.value = result.role.roleEnum;
+
+                    let formattedDatePayment = formatDate(
+                        result.payments[0].nextPaymentDate,
+                    );
+                    pay.value = formattedDatePayment;
+
+                    let formattedRutina = formatRutina(result.rutina);
+                    rutina.value = formattedRutina;
+
+                    document.getElementById("payFind").style.color = colorDate(formattedDatePayment);
+                
+                
+                } else {
+                    let errorText = await response.json();
+                    alert(errorText.message);
+                }
+            } catch (error) {
+                console.error("Error :", error);
+                alert("Ocurrió un error durante la búsqueda");
+            }
+        });
+
+    function formatRutina(rutina) {
+        if (rutina === null) return "No se encontró ninguna rutina";
+        return rutina
+            .map((day) => {
+                let dayText = `Día: ${capitalizeFirstLetter(day.dia)}\n`;
+                let exercisesText = day.ejercicios
+                    .map((exercise) => {
+                        return `  - ${exercise.nombre}: ${exercise.sets} sets de ${exercise.reps} reps`;
+                    })
+                    .join("\n");
+                return `${dayText}${exercisesText}`;
+            })
+            .join("\n\n");
+    }
+
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    function formatDate(dateString) {
+        let date = new Date(dateString);
+        let day = date.getDate().toString().padStart(2, "0");
+        let month = (date.getMonth() + 1).toString().padStart(2, "0");
+        let year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    function colorDate(dateString) {
+        let date = new Date(dateString);
+        if(date < new Date()){
+            return "#ff0000";
+        }
+        return "#00ff00";
+    }
+
+    document.getElementById("addPaymentBtn").addEventListener("click", async () => {
+        let dni = document.getElementById("dniImput") as HTMLInputElement;
+        let nextPaymentDate = document.getElementById("payFind") as HTMLInputElement;
+
+        try {
+            let response = await fetch("http://localhost:8080/admin/payment/" + dni.value, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            });
+
+            if (response.ok) {
+                alert("Pago registrado exitosamente");
+            } else {
+                let errorText = await response.json();
+                alert("Error al registrar el pago: " + errorText.message);
+            }
+        } catch (error) {
+            console.error("Error :", error);
+            alert("Ocurrió un error durante el registro del pago");
+        }
+    });
+
+</script>
