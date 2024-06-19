@@ -1,17 +1,17 @@
-<div class="flex flex-col items-center justify-center">
+<div>
     <form
         id="findUserForm"
-        class="flex flex-col justify-center items-center gap-2 text-white p-5 border-4 border-black rounded-xl"
+        class="flex flex-col justify-center items-center gap-2 text-white p-5 border-4 border-black rounded-xl "
     >
         <h2 class="text-3xl font-bold py-2s">Buscar usuario</h2>
-        <div class="flex gap-1">
+        <div class="w-full flex justify-between">
             <input
                 type="text"
                 id="dniImput"
                 placeholder="DNI"
                 class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent"
             />
-            <button type="submit" class="bg-green-500 text-white rounded-xl p-2"
+            <button type="submit" class="bg-green-500 text-white rounded-xl py-2 px-4"
                 >Buscar</button
             >
         </div>
@@ -43,6 +43,21 @@
             placeholder="ROL"
             class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent w-full"
         />
+        <select
+            name="role"
+            id="roleSelect"
+            class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent hidden"
+        >
+            <option value="USER" class="bg-transparent text-black"
+                >Usuario</option
+            >
+            <option value="TRAINER" class="bg-transparent text-black"
+                >Trainer</option
+            >
+            <option value="ADMIN" class="bg-transparent text-black"
+                >Admin</option
+            >
+        </select>
         <textarea
             disabled
             name="rutina"
@@ -56,10 +71,29 @@
             type="text"
             id="payFind"
             placeholder="Fecha de pago"
-            class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent w-full "
+            class="p-2 rounded-xl border-y-2 border-x-4 border-yellow-300 bg-transparent w-full"
         />
-        <button type="button" id="addPaymentBtn" class="bg-blue-500 text-white rounded-xl p-2 mt-2">
-            Registrar Pago
+        <div>
+            <button
+                type="button"
+                id="addPaymentBtn"
+                class="bg-blue-500 text-white rounded-xl p-2 mt-2"
+            >
+                Registrar Pago
+            </button>
+            <button
+                type="button"
+                id="updateUserBtn"
+                class="bg-blue-500 text-white rounded-xl p-2 mt-2"
+            >
+                Modificar Usuario
+            </button>
+        </div>
+        <button
+            id="ConfirmChangesBtn"
+            class="bg-blue-500 text-white rounded-xl p-2 mt-2 hidden"
+        >
+            Confirmar cambios
         </button>
     </form>
 </div>
@@ -111,9 +145,8 @@
                     let formattedRutina = formatRutina(result.rutina);
                     rutina.value = formattedRutina;
 
-                    document.getElementById("payFind").style.color = colorDate(formattedDatePayment);
-                
-                
+                    document.getElementById("payFind").style.color =
+                        colorDate(formattedDatePayment);
                 } else {
                     let errorText = await response.json();
                     alert(errorText.message);
@@ -153,35 +186,122 @@
 
     function colorDate(dateString) {
         let date = new Date(dateString);
-        if(date < new Date()){
+        if (date < new Date()) {
             return "#ff0000";
         }
         return "#00ff00";
     }
 
-    document.getElementById("addPaymentBtn").addEventListener("click", async () => {
-        let dni = document.getElementById("dniImput") as HTMLInputElement;
-        let nextPaymentDate = document.getElementById("payFind") as HTMLInputElement;
+    document
+        .getElementById("addPaymentBtn")
+        .addEventListener("click", async () => {
+            let dni = document.getElementById("dniImput") as HTMLInputElement;
 
-        try {
-            let response = await fetch("http://localhost:8080/admin/payment/" + dni.value, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-            });
+            try {
+                let response = await fetch(
+                    "http://localhost:8080/admin/payment/" + dni.value,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        credentials: "include",
+                    },
+                );
 
-            if (response.ok) {
-                alert("Pago registrado exitosamente");
-            } else {
-                let errorText = await response.json();
-                alert("Error al registrar el pago: " + errorText.message);
+                if (response.ok) {
+                    alert("Pago registrado exitosamente");
+                } else {
+                    let errorText = await response.json();
+                    alert("Error al registrar el pago: " + errorText.message);
+                }
+            } catch (error) {
+                console.error("Error :", error);
+                alert("Ocurrió un error durante el registro del pago");
             }
-        } catch (error) {
-            console.error("Error :", error);
-            alert("Ocurrió un error durante el registro del pago");
-        }
-    });
+        });
 
+    document
+        .getElementById("updateUserBtn")
+        .addEventListener("click", (event) => {
+            event.preventDefault();
+            try {
+                document.getElementById("ConfirmChangesBtn").style.display =
+                    "block";
+                document.getElementById("roleSelect").style.display = "block";
+                document.getElementById("roleFind").style.display = "none";
+                (
+                    document.getElementById("nameFind") as HTMLInputElement
+                ).disabled = false;
+                (
+                    document.getElementById("emailFind") as HTMLInputElement
+                ).disabled = false;
+                (
+                    document.getElementById("phoneFind") as HTMLInputElement
+                ).disabled = false;
+                (
+                    document.getElementById("roleFind") as HTMLInputElement
+                ).disabled = false;
+            } catch (error) {
+                console.error("Error :", error);
+                alert("Ocurrió un error ");
+            }
+        });
+
+    document
+        .getElementById("ConfirmChangesBtn")
+        .addEventListener("click", async (event) => {
+            event.preventDefault();
+
+            let dniUpda = document.getElementById(
+                "dniImput",
+            ) as HTMLInputElement;
+            let nameUpdate = document.getElementById(
+                "nameFind",
+            ) as HTMLInputElement;
+            let emailUpdate = document.getElementById(
+                "emailFind",
+            ) as HTMLInputElement;
+            let phoneUpdate = document.getElementById(
+                "phoneFind",
+            ) as HTMLInputElement;
+            let role = document.getElementById(
+                "roleSelect",
+            ) as HTMLInputElement;
+
+            let authRegisterRequest = {
+                name: nameUpdate.value,
+                email: emailUpdate.value,
+                phone: phoneUpdate.value,
+                roleRequest: {
+                    roleName: [role.value],
+                },
+            };
+
+            try {
+                let response = await fetch(
+                    "http://localhost:8080/admin/update/" + dniUpda.value,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(authRegisterRequest),
+                        credentials: "include",
+                    },
+                );
+
+                if (response.ok) {
+                    alert("Usuario actualizado exitosamente");
+                } else {
+                    let errorText = await response.json();
+                    alert(
+                        "Error al actualizar el usuario: " + errorText.message,
+                    );
+                }
+            } catch (error) {
+                console.error("Error :", error);
+                alert("Ocurrió un error");
+            }
+        });
 </script>

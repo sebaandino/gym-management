@@ -79,7 +79,9 @@ public class JwtUtil {
 
 
         try {
-            DecodedJWT jwt = verifier.verify(token);
+            if(verifier.verify(token) != null) {
+                return true;
+            }
             return true;
         } catch (JWTVerificationException e) {
             return false;

@@ -5,6 +5,7 @@ import java.util.List;
 import com.gym.demo.dtos.RutinaDiaDto;
 import com.gym.demo.dtos.UserEntityDto;
 import com.gym.demo.models.Payment;
+import com.gym.demo.security.config.Auth.AuthRegisterRequest;
 
 public interface AdminService {
 
@@ -23,5 +24,7 @@ public interface AdminService {
     List<Payment> findPaymentsByDni(String dni);
 
     Payment addPayment(String dni);
+
+    void updateUser(String dni, AuthRegisterRequest authRegisterRequest);
 
 }

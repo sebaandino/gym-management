@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gym.demo.security.config.UserDetailsServiceImpl;
 import com.gym.demo.security.config.Auth.AuthLoginRequest;
-import com.gym.demo.security.config.Auth.AuthRegisterRequest;
 import com.gym.demo.security.config.Auth.AuthResponse;
 import com.gym.demo.security.config.jwt.JwtUtil;
 

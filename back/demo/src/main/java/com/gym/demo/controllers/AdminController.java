@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 @RequestMapping("/admin")
@@ -106,5 +108,19 @@ public class AdminController {
             response.put("message", e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @PutMapping("update/{dni}")
+    public ResponseEntity<Map<String,String>> updateUser(@PathVariable("dni") String dni , @RequestBody AuthRegisterRequest authRegisterRequest) {
+
+        Map<String,String> response = new HashMap<>();
+        try {
+            adminService.updateUser(dni, authRegisterRequest);
+            response.put("message", "Usuario actualizado con éxito");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            response.put("message", e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }   
     }
 }

@@ -10,7 +10,9 @@ import com.gym.demo.dtos.UserEntityDto;
 import com.gym.demo.models.Payment;
 import com.gym.demo.models.UserEntity;
 import com.gym.demo.repository.PaymentRepository;
+import com.gym.demo.repository.RoleRepository;
 import com.gym.demo.repository.UserRepository;
+import com.gym.demo.security.config.Auth.AuthRegisterRequest;
 import com.gym.demo.utils.UsuarioMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,8 @@ public class AdminServiceImp implements AdminService {
     private final UserRepository usuarioRepository;
 
     private final PaymentRepository paymentRepository;
+
+    private final RoleRepository roleRepository;
 
     @Override
     public void save(UserEntityDto usuarioDto) {
@@ -91,10 +95,25 @@ public class AdminServiceImp implements AdminService {
         if (userEntity == null) {
             throw new RuntimeException("Usuario no encontrado");
         }
-        
+
         userEntity.setRutina(rutinaDiaDto);
         usuarioRepository.save(userEntity);
     }
 
+    @Override
+    public void updateUser(String dni, AuthRegisterRequest authRegisterRequest) {
+
+        UserEntity user = usuarioRepository.findByDni(dni);
+        if (user != null) {
+
+            user.setName(authRegisterRequest.name());
+            user.setEmail(authRegisterRequest.email());
+            user.setPhone(authRegisterRequest.phone());
+            user.setRole(roleRepository.findByRoleEnum(authRegisterRequest.roleRequest().roleName().get(0)));
+
+            usuarioRepository.save(user);
+        }
+
+    }
 
 }
