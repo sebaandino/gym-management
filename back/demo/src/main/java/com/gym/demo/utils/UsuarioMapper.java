@@ -2,8 +2,6 @@ package com.gym.demo.utils;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
-
 import com.gym.demo.dtos.UserEntityDto;
 import com.gym.demo.models.UserEntity;
 

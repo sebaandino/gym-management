@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.gym.demo.dtos.RutinaDiaDto;
 import com.gym.demo.models.Payment;
 import com.gym.demo.models.Role;
 import com.gym.demo.models.UserEntity;
@@ -109,6 +110,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 String dni = authRegisterRequest.dni();
                 String email = authRegisterRequest.email();
                 String phone = authRegisterRequest.phone();
+                List<RutinaDiaDto> rutinaDiaDto = authRegisterRequest.rutinaDiaDto();
                 String roleRequest = authRegisterRequest.roleRequest().roleName().stream()
                                 .collect(Collectors.joining(","));
 
@@ -138,7 +140,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                                 .accountNoExpired(true)
                                 .credentialNoExpired(true)
                                 .role(role)
-                                .rutina(null)
+                                .rutina(rutinaDiaDto)
                                 .payments(payments)
                                 .build();
 

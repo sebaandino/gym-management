@@ -1,0 +1,87 @@
+---
+import LoadUserInfo from "./userPanel/LoadUserInfo.astro";
+
+interface Props {
+    name: string;
+    email: string;
+    phone: string;
+    nextPaymentDay: string;
+    rutina: string;
+}
+
+let name = "";
+let email = "";
+let phone = "";
+let nextPaymentDay = "";
+let rutina = "";
+
+const fetchUserInfo = async () => {
+    try {
+        let response = await fetch("http://localhost:8080/user/getInfo", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+        });
+
+        if (response.ok) {
+            let resultText = await response.text();
+            if (!resultText) {
+                throw new Error("Respuesta vacía del servidor");
+            }
+
+            let result;
+            try {
+                result = JSON.parse(resultText);
+            } catch (jsonError) {
+                throw new Error("Respuesta JSON no válida");
+            }
+
+            let formattedDatePayment = formatDate(result.payments[0].nextPaymentDate);
+            let formattedRutina = formatRutina(result.rutina);
+
+                name= result.name,
+                email= result.email,
+                phone=result.phone,
+                nextPaymentDay= formattedDatePayment,
+                rutina= formattedRutina;
+        } else {
+            let errorText = await response.json();
+        }
+    } catch (error) {
+        console.error("Error :", error);
+    }
+};
+
+const formatRutina = (rutina) => {
+    if (rutina === null) return "No se encontró ninguna rutina";
+    return rutina
+        .map((day) => {
+            let dayText = `Día: ${capitalizeFirstLetter(day.dia)}\n`;
+            let exercisesText = day.ejercicios
+                .map((exercise) => {
+                    return `  - ${exercise.nombre}: ${exercise.sets} sets de ${exercise.reps} reps`;
+                })
+                .join("\n");
+            return `${dayText}${exercisesText}`;
+        })
+        .join("\n\n");
+};
+
+const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+const formatDate = (dateString) => {
+    let date = new Date(dateString);
+    let day = date.getDate().toString().padStart(2, "0");
+    let month = (date.getMonth() + 1).toString().padStart(2, "0");
+    let year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+};
+
+await fetchUserInfo();
+---
+
+<LoadUserInfo name={name} email={email} phone={phone} nextPaymentDay={nextPaymentDay} rutina={rutina} />

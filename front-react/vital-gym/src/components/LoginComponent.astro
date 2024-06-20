@@ -3,14 +3,17 @@
 ---
 
 <div class="h-screen flex flex-col justify-center items-center">
-    <form id="loginForm" class="flex flex-col justify-center items-center gap-6 text-xl">
+    <form
+        id="loginForm"
+        class="flex flex-col justify-center items-center gap-6 text-xl"
+    >
         <div class="flex flex-col justify-center items-center gap-2">
             <label for="username">DNI</label>
             <input
                 type="text"
                 name="username"
                 id="username"
-                class="p-2 rounded-xl border-b-2 border-x-4 border-yellow-300 "
+                class="p-2 rounded-xl border-b-2 border-x-4 border-yellow-300"
                 required
             />
         </div>
@@ -20,83 +23,69 @@
                 type="password"
                 name="password"
                 id="password"
-                class="p-2 rounded-xl border-b-2 border-x-4 border-yellow-300 "
+                class="p-2 rounded-xl border-b-2 border-x-4 border-yellow-300"
                 required
             />
         </div>
-        <button type="submit" class="bg-green-500 text-white p-4 w-full rounded-xl">
+        <button
+            type="submit"
+            class="bg-green-500 text-white p-4 w-full rounded-xl"
+        >
             Login
         </button>
         <p id="message"></p>
     </form>
-    <h3 class="w-2/3 text-center">Si olvidaste tu contraseña, puedes hacercarte a recepcion </h3>
+    <h3 class="w-2/3 text-center">
+        Si olvidaste tu contraseña, puedes hacercarte a recepcion
+    </h3>
 </div>
 
 <script>
     document
         .getElementById("loginForm")
         .addEventListener("submit", async (event) => {
-            event.preventDefault(); // Prevenir la recarga de la página
+            event.preventDefault();
 
-            const usernameInput = document.getElementById(
+            let username = document.getElementById(
                 "username",
             ) as HTMLInputElement;
-            const passwordInput = document.getElementById(
+            let password = document.getElementById(
                 "password",
             ) as HTMLInputElement;
-            const messageElement = document.getElementById("message");
 
-            // Obtener los valores de los campos de entrada
-            const username = usernameInput.value;
-            const password = passwordInput.value;
-
-            let headersList = {
-                Accept: "*/*",
-                "Content-Type": "application/json",
-            };
-
-            let bodyContent = JSON.stringify({
-                username: username,
-                password: password,
-            });
+            const usernameLoad = username.value;
+            const passwordLoad = password.value;
 
             try {
-                const response = await fetch(
-                    "http://localhost:8080/auth/login",
-                    {
-                        method: "POST",
-                        headers: headersList,
-                        body: bodyContent,
-                        credentials: "include",
+                let response = await fetch("http://localhost:8080/auth/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
                     },
-                );
+                    body: JSON.stringify({
+                        username: usernameLoad,
+                        password: passwordLoad,
+                    }),
+                    credentials: "include",
+                });
 
-                // Verificar si la respuesta es exitosa
                 if (response.ok) {
-                    const responseBody = await response.json();
-                    const userRole = responseBody.role;
-                    console.log("User Role:", userRole);
+                    let result = await response.json();
+                    let role = result.role;
 
-                    // Redirigir según el rol del usuario
-                    if (userRole === "ROLE_ADMIN") {
-                        window.location.href = "/admin"; // Página de administrador
-                    } else {
-                        window.location.href = "/user"; // Página de usuario estándar
+                    if (role === "ROLE_USER") {
+                        window.location.href = "/user";
+                    } else if (role === "ROLE_ADMIN") {
+                        window.location.href = "/admin";
+                    } else if (role === "ROLE_TRAINER") {
+                        window.location.href = "/trainer";
                     }
                 } else {
-                    const errorText = await response.text();
-                    console.error(
-                        "La solicitud de inicio de sesión falló:",
-                        response.status,
-                        errorText,
-                    );
-                    messageElement.textContent = "Login failed: " + errorText;
-                    messageElement.style.color = "red";
+                    alert("Inicio de sesión fallido");
                 }
             } catch (error) {
-                console.error("Error durante la solicitud:", error);
-                messageElement.textContent = "An error occurred";
-                messageElement.style.color = "red";
+                console.error("Error durante el inicio de sesión:", error);
+                alert("Ocurrió un error durante el inicio de sesión");
             }
         });
 </script>
